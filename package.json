@@ -1,0 +1,22 @@
+{
+  "name": "speechtranslationazure",
+  "version": "1.0.0",
+  "description": "Testing Microsoft Azure Speech Translation API!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/instafluff/SpeechTranslationAzure.git"
+  },
+  "author": "Instafluff",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/instafluff/SpeechTranslationAzure/issues"
+  },
+  "homepage": "https://github.com/instafluff/SpeechTranslationAzure#readme",
+  "dependencies": {
+    "webwebweb": "^1.0.1"
+  }
+}

@@ -1,0 +1,126 @@
+<html>
+<head>
+   <title>Microsoft Azure Speech Translation Test!</title>
+</head>
+<body>
+ <!-- UI code goes here -->
+ <div id="warning">
+  <h1 style="font-weight:500;">Speech Recognition Speech SDK not found (microsoft.cognitiveservices.speech.sdk.bundle.js missing).</h1>
+</div>
+
+<div id="content" style="display:none">
+  <table width="100%" style="display:none">
+    <tr>
+      <td></td>
+      <td><h1 style="font-weight:500;">Translation!</h1></td>
+    </tr>
+    <tr>
+      <td align="right"><a href="https://docs.microsoft.com/azure/cognitive-services/speech-service/get-started" target="_blank">Subscription</a>:</td>
+      <td><input id="subscriptionKey" type="hidden" size="40" value="subscription"></td>
+    </tr>
+    <tr>
+      <td align="right">Region</td>
+      <td><input id="serviceRegion" type="text" size="40" value="westus"></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><button id="startRecognizeOnceAsyncButton">Start recognition</button></td>
+    </tr>
+    <tr>
+      <td align="right" valign="top">Results</td>
+      <td></td>
+    </tr>
+  </table>
+  <h1 id="phraseDiv"></h1>
+</div>
+
+ <!-- SDK reference goes here -->
+ <!-- Speech SDK reference sdk. -->
+<script src="/web/microsoft.cognitiveservices.speech.sdk.bundle.js"></script>
+<script src="/web/subscriptionKey.js"></script>
+<!-- Speech SDK USAGE -->
+<script>
+  document.getElementById("subscriptionKey").value = subscriptionKey;
+  // status fields and start button in UI
+  var phraseDiv;
+  var startRecognizeOnceAsyncButton;
+
+  // subscription key and region for speech services.
+  var serviceRegion;
+  var authorizationToken = undefined;
+  var SpeechSDK;
+  var recognizer;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    startRecognizeOnceAsyncButton = document.getElementById("startRecognizeOnceAsyncButton");
+    subscriptionKey = document.getElementById("subscriptionKey");
+    serviceRegion = document.getElementById("serviceRegion");
+    phraseDiv = document.getElementById("phraseDiv");
+
+      console.log( "recognizing!" );
+      startRecognizeOnceAsyncButton.disabled = true;
+      phraseDiv.innerHTML = "";
+
+      // if we got an authorization token, use the token. Otherwise use the provided subscription key
+      var speechConfig;
+      if (authorizationToken) {
+        speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(authorizationToken, serviceRegion.value);
+      } else {
+        if (subscriptionKey.value === "" || subscriptionKey.value === "subscription") {
+          alert("Please enter your Microsoft Cognitive Services Speech subscription key!");
+          return;
+        }
+        speechConfig = SpeechSDK.SpeechTranslationConfig.fromSubscription(subscriptionKey.value, serviceRegion.value);
+      }
+      console.log( speechConfig );
+
+      speechConfig.speechRecognitionLanguage = "en-US";//"de-DE";//"en-US";// "es-ES";//"en-US";
+      speechConfig.addTargetLanguage( "fr-FR" );
+      // speechConfig.voiceName = "de-DE-KatjaNeural";
+      var audioConfig  = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+      recognizer = new SpeechSDK.TranslationRecognizer(speechConfig, audioConfig);
+
+      recognizer.startContinuousRecognitionAsync( ( result ) => {
+      });
+
+      recognizer.synthesizing = ( sender, event ) => {
+        console.log( "SYNTH:", event );
+      };
+
+      recognizer.recognizing = ( sender, event ) => {
+        if( event.privResult.translations.privMap.privValues[ 0 ] ) {
+          phraseDiv.innerHTML = event.privResult.translations.privMap.privValues[ 0 ] || "";
+          // phraseDiv.innerHTML += " ";
+        }
+      };
+
+      recognizer.recognized = ( sender, event ) => {
+        if( event.privResult.translations.privMap.privValues[ 0 ] ) {
+          phraseDiv.innerHTML = event.privResult.translations.privMap.privValues[ 0 ] || "";
+          // phraseDiv.innerHTML += " ";
+        }
+      };
+
+      // setTimeout( recognizer.stopContinuousRecognitionAsync, 10000 );
+
+    if (!!window.SpeechSDK) {
+      SpeechSDK = window.SpeechSDK;
+      startRecognizeOnceAsyncButton.disabled = false;
+
+      document.getElementById('content').style.display = 'block';
+      document.getElementById('warning').style.display = 'none';
+
+      // in case we have a function for getting an authorization token, call it.
+      if (typeof RequestAuthorizationToken === "function") {
+          RequestAuthorizationToken();
+      }
+    }
+  });
+</script>
+
+ <!-- Optional authorization token request goes here -->
+
+ <!-- Sample code goes here -->
+
+</body>
+</html>
